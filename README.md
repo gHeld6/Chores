@@ -9,5 +9,5 @@ This program is used with the Raspberry Pi to display and track chores for 2 peo
 - Potentiometer
 
 ### Author
--Greg Held
+- Greg Held
 

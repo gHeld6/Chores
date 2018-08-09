@@ -4,9 +4,10 @@ This program is used with the Raspberry Pi to display and track chores for 2 peo
 ### Prerequisits
 - Raspberry Pi
 - Grove Pi Hat
-- Grove Pi 16x2 LCD display
-- Grove Pi RGB LED x2
-- Potentiometer
+- Grove 16x2 LCD Display
+- Grove RGB LED x2
+- Grove Potentiometer
+- Grove Light Sensor
 
 ### Author
 - Greg Held

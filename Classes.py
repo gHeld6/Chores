@@ -3,7 +3,7 @@ class Chore:
     def __init__(self, chore, user):
         self.chore = chore
         self.done = False
-        self.assigned_to = str(user).title()
+        self.assigned_to = user
 
     def is_completed(self):
         """
@@ -30,12 +30,19 @@ class Chore:
 
 class User:
 
-    def __init__(self, name) -> None:
+    def __init__(self, name, color):
         self.name = str(name).title()
         self.num_chores = 0
+        self.color = color
 
-    def chores_assigned(self) -> int:
+    def chores_assigned(self):
         return self.num_chores
+
+    def get_color(self):
+        return self.color
+
+    def set_color(self, color):
+        self.color = color
 
     def add_chore(self, chore):
         self.num_chores += 1
@@ -59,7 +66,7 @@ class Day():
         return self.days[self.day]
 
     def get_chores(self):
-        return self.chore_list.copy()
+        return self.chore_list
 
     def get_num_chores(self):
         return len(self.chore_list)

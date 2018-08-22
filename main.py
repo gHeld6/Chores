@@ -1,4 +1,5 @@
 from Classes import Chore, User, Day, Week
+import pickle
 import time
 import random
 from math import *
@@ -59,30 +60,8 @@ def get_ind(level, num_chore):
     return index
 
 
-greg = User("Greg", "blue")
-alex = User("Alex", "purple")
-
-c1 = Chore("Scoop cat litter", greg)
-c2 = Chore("Scoop cat litter", alex)
-c3 = Chore("Read to children", alex)
-c4 = Chore("Do laundry", greg)
-c5 = Chore("Do dishes", greg)
-c6 = Chore("Water Plants", alex)
-c7 = Chore("Feed Children", alex)
-c8 = Chore("Do laundry", greg)
-
-c4.set_completed("true")
-c1.set_completed("true")
-
-week = Week()
-week.add_chore(c1, 3)
-week.add_chore(c2, 3)
-week.add_chore(c3, 3)
-week.add_chore(c4, 3)
-week.add_chore(c5, 3)
-week.add_chore(c6, 3)
-week.add_chore(c7, 3)
-week.add_chore(c8, 3)
+with open("storage", "rb") as file:
+    week = pickle.load(file)
 
 today = date.today()
 

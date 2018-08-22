@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title>Update Chore List</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <style>
+            body {
+                background: light-blue;
+            }
+            table, td, tr {
+                border: 1px solid black;
+            }
+            .chore {
+                width: 150;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Update Chore List</h1>
+        <table>
+            <tr><td colspan="3">Chore List</td></tr>
+            {% for c in chores['chores'] %}
+            <tr><td class="chore">{{ c['chore'] }}</td><td>{{ c['assignedTo'] }}</td><td>{{ c['finished'] }}</td></tr>
+            {% endfor %}
+        </table>
+
+    </body>
+</html>

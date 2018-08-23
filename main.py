@@ -1,6 +1,7 @@
-from Classes import Chore, User, Day, Week
+from Classes import *
 import pickle
 import time
+import os
 import random
 from math import *
 from datetime import date
@@ -8,6 +9,7 @@ from grovepi import *
 from grove_rgb_lcd import *
 
 MAX_RANGE = 1023 # maximum value for potentiometer
+
 
 led = 4
 button = 3
@@ -59,20 +61,32 @@ def get_ind(level, num_chore):
     
     return index
 
+def init_file():
+    w = Week()
+    with open(file_name, "rb") as file:
+        pickle.dump(file, w)
 
-with open("storage", "rb") as file:
-    week = pickle.load(file)
 
+#if storage file does not exist, create it and put an empty week in it
+if not os.path.isfile(file_name):
+    init_file()
+
+week = get_week()
+
+old_mod_time = os.stat(file_name).st_mtime
 today = date.today()
 
 old_day = today.weekday()
 day = week.get_day(today.weekday())# get the day object for the day of week it is
 chores = day.get_chores()  # get list of chores for the day of week it is
 old_level = get_level()
-old_chore = disp_chore(chores[get_ind(old_level, len(chores))])
+disp_chore(chores[get_ind(old_level, len(chores))])
 
 while True:
-    
+    new_mod_time = os.stat(file_name).st_mtime
+    if new_mod_time != old_mod_time:
+        week = get_week()
+        old_mod_time = new_mod_time
     today = date.today()
     if old_day != today.weekday():
         day = week.get_day(today.weekday())  
@@ -91,6 +105,7 @@ while True:
     if digitalRead(button):
         cur_chore.set_completed(not(cur_chore.is_completed()))
         disp_chore(chores[ind])
+        update_file(week)
         time.sleep(.3)
         
     # print("%s, %d, num_chores: %d" % (day.get_day(), today.weekday(), num_chores))
@@ -98,25 +113,6 @@ while True:
         disp_chore(cur_chore)
         old_chore = cur_chore
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    '''for day in days:
-        print(day.get_day())
-        chores = day.get_chores()
-        for c in chores:
-            print("%s, Assigned to: %s" % (c.get_chore(), c.who()))
-    '''
 
 
 

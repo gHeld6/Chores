@@ -1,11 +1,7 @@
 from app import app_inst
-from Classes import Chore, User, Day, Week
+from Classes import *
 from flask import render_template
 import pickle
-from datetime import date
-
-
-file_name = "storage"
 
 
 @app_inst.route("/")

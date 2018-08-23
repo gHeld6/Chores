@@ -1,3 +1,6 @@
+import pickle
+file_name = "storage"
+
 class Chore:
 
     def __init__(self, chore, user):
@@ -85,3 +88,13 @@ class Week:
 
     def get_days(self):
         return self.day_list.copy()
+
+
+def update_file(w, file):
+    with open(file, "wb") as f:
+        pickle.dump(w, f)
+
+
+def get_week(file):
+    with open(file, "rb") as f:
+        return pickle.load(f)

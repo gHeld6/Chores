@@ -1,5 +1,5 @@
 # Chore Tracker
-This program is used with the Raspberry Pi to display and track chores for 2 people. First, the program will get the day of the week, display the first chore for that day, who it is assigned to, and if it is completed or not. 
+This program is used with the Raspberry Pi to display and track chores for 2 people. The project will have two main parts. One is a program to read the data from the file and display it on the lcd screen and deal with the hardware on the Raspberry Pi. The other will be a web application that can be accessed on a local network. This will be used to update the chore list.
 
 ### Prerequisits
 - Raspberry Pi

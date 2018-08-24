@@ -19,6 +19,7 @@ pinMode(led, "OUTPUT")
 pinMode(button, "INPUT")
 
 time.sleep(1)
+greg = User("Greg", "blue")
 
 
 rgb_vals = {"red": [255, 0, 0], "green": [0, 255, 0], "blue": [0, 0, 255],
@@ -26,7 +27,6 @@ rgb_vals = {"red": [255, 0, 0], "green": [0, 255, 0], "blue": [0, 0, 255],
 
 def get_level():
     l = analogRead(pot)
-    print str(l)
     return l
 
 def assign_chore(chore, user):
@@ -62,9 +62,16 @@ def get_ind(level, num_chore):
     return index
 
 def init_file():
+    u1 = User("Greg", "blue")
+    u2 = User("Alex", "purple")
+    c1 = Chore("Scoop cat litter", u1)
+    c2 = Chore("Do dishes", u2)
     w = Week()
-    with open(file_name, "rb") as file:
-        pickle.dump(file, w)
+    for i in range(7):
+        w.add_chore(c1, i)
+        w.add_chore(c2, i)
+    with open(file_name, "wb") as file:
+        pickle.dump(w, file)
 
 
 #if storage file does not exist, create it and put an empty week in it
@@ -80,7 +87,7 @@ old_day = today.weekday()
 day = week.get_day(today.weekday())# get the day object for the day of week it is
 chores = day.get_chores()  # get list of chores for the day of week it is
 old_level = get_level()
-disp_chore(chores[get_ind(old_level, len(chores))])
+old_chore = disp_chore(chores[get_ind(old_level, len(chores))])
 
 while True:
     new_mod_time = os.stat(file_name).st_mtime
@@ -104,8 +111,14 @@ while True:
 
     if digitalRead(button):
         cur_chore.set_completed(not(cur_chore.is_completed()))
+        #week.day_list[today.weekday()].chore_list[ind] = cur_chore
+        #week.day_list[today.weekday()].add_chore(Chore("New chore", greg))
+        with open(file_name, "wb") as f:
+            #print m.day_list[d].chore_list[ind].is_completed()
+            pickle.dump(week, f)
+            f.close()
         disp_chore(chores[ind])
-        update_file(week)
+        #update_file(week, today.weekday(), ind)
         time.sleep(.3)
         
     # print("%s, %d, num_chores: %d" % (day.get_day(), today.weekday(), num_chores))

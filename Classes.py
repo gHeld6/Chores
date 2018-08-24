@@ -90,11 +90,13 @@ class Week:
         return self.day_list.copy()
 
 
-def update_file(w, file):
-    with open(file, "wb") as f:
-        pickle.dump(w, f)
+def update_file(m, d, ind):
+    with open(file_name, "wb") as f:
+        print m.day_list[d].chore_list[ind].is_completed()
+        pickle.dump(m, f)
 
 
-def get_week(file):
-    with open(file, "rb") as f:
-        return pickle.load(f)
+def get_week():
+    with open(file_name, "rb") as f:
+        w = pickle.load(f)
+        return w

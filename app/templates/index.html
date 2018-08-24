@@ -18,8 +18,15 @@
         <h1>Update Chore List</h1>
         <table>
             <tr><td colspan="3">Chore List</td></tr>
-            {% for c in chores['chores'] %}
-            <tr><td class="chore">{{ c['chore'] }}</td><td>{{ c['assignedTo'] }}</td><td>{{ c['finished'] }}</td></tr>
+            {% for day in week.get_days() %}
+                <tr><td colspan="3">{{ day.get_day() }}</td></tr>
+                {% if day.num_chores() == 0 %}
+                    <tr><td colspan="3">No chores for {{ day.get_day() }}</td></tr>
+                {% else %}
+                    {% for c in day.get_chores() %}
+                        <tr><td class="chore">{{ c.get_chore() }}</td><td>{{ c.who().get_name() }}</td><td>{{ c.is_completed() }}</td></tr>
+                    {% endfor %}
+                {% endif %}
             {% endfor %}
         </table>
 

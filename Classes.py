@@ -1,8 +1,8 @@
 import pickle
 file_name = "storage"
 
-class Chore:
 
+class Chore:
     def __init__(self, chore, user):
         self.chore = chore
         self.done = False
@@ -32,7 +32,6 @@ class Chore:
 
 
 class User:
-
     def __init__(self, name, color):
         self.name = str(name).title()
         self.num_chores = 0
@@ -55,7 +54,6 @@ class User:
 
 
 class Day():
-
     days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
     def __init__(self, day_num):
@@ -64,6 +62,9 @@ class Day():
 
     def add_chore(self, chore):
         self.chore_list.append(chore)
+
+    def num_chores(self):
+        return len(self.chore_list)
 
     def get_day(self):
         return self.days[self.day]
@@ -76,7 +77,6 @@ class Day():
 
 
 class Week:
-
     def __init__(self):
         self.day_list = [Day(0), Day(1), Day(2), Day(3), Day(4), Day(5), Day(6)]
 
@@ -90,9 +90,8 @@ class Week:
         return self.day_list.copy()
 
 
-def update_file(m, d, ind):
+def update_file(m):
     with open(file_name, "wb") as f:
-        print m.day_list[d].chore_list[ind].is_completed()
         pickle.dump(m, f)
 
 

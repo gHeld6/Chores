@@ -111,14 +111,11 @@ while True:
 
     if digitalRead(button):
         cur_chore.set_completed(not(cur_chore.is_completed()))
-        #week.day_list[today.weekday()].chore_list[ind] = cur_chore
-        #week.day_list[today.weekday()].add_chore(Chore("New chore", greg))
         with open(file_name, "wb") as f:
-            #print m.day_list[d].chore_list[ind].is_completed()
             pickle.dump(week, f)
             f.close()
         disp_chore(chores[ind])
-        #update_file(week, today.weekday(), ind)
+        # update_file(week, today.weekday(), ind)
         time.sleep(.3)
         
     # print("%s, %d, num_chores: %d" % (day.get_day(), today.weekday(), num_chores))

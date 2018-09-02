@@ -60,6 +60,9 @@ class Day():
         self.day = day_num
         self.chore_list = []
 
+    def remove_chore(self, chore):
+        self.chore_list.remove(chore)
+
     def add_chore(self, chore):
         self.chore_list.append(chore)
 
@@ -79,8 +82,13 @@ class Day():
 class Week:
     def __init__(self):
         self.day_list = [Day(0), Day(1), Day(2), Day(3), Day(4), Day(5), Day(6)]
+        self.users = set()
 
-    def add_chore(self, chore, day):
+    def get_users(self):
+        return list(self.users)
+
+    def add_chore(self, chore, day, user):
+        self.users.add(user)
         self.day_list[int(day)].add_chore(chore)
 
     def get_day(self, day):
@@ -99,3 +107,11 @@ def get_week():
     with open(file_name, "rb") as f:
         w = pickle.load(f)
         return w
+
+
+def add_chore(day, chore, user, color, week):
+    week.add_chore(int(day), )
+
+
+def add_chore_list(day, chore, user):
+    return 2

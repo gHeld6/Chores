@@ -61,6 +61,7 @@ def get_ind(level, num_chore):
     
     return index
 
+
 def init_file():
     u1 = User("Greg", "blue")
     u2 = User("Alex", "purple")

@@ -1,0 +1,22 @@
+
+html {
+    background-color: pink;
+}
+
+table, td, tr {
+    border: 1px solid black;
+}
+.chore {
+    width: 300;
+}
+.day {
+    background-color: lightblue;
+}
+body {
+    width: 500px;
+    background-color: white;
+}
+.addChore {
+    width: 100%;
+    background-color: lightblue;
+}

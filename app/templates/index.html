@@ -42,6 +42,17 @@
             </ul>
             {% endif %}
         {% endwith %}
+
+        <table>
+            <tr><td colspan="4">Chore List</td></tr>
+
+            {% for i in range(0, 7) %}
+                <tr><td class="day" colspan="4">{{ day_names[i] }}</td></tr>
+                {% for c in days[i] %}
+                    <tr><td>{{ c[0] }}</td><td>{{ c[1] }}</td><td>{{ c[2] }}</td></tr>
+                {% endfor %}
+            {% endfor %}
+        </table>
         <table>
             <tr><td colspan="4">Chore List</td></tr>
 

@@ -1,6 +1,6 @@
 import pickle
 file_name = "storage"
-
+DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 class Chore:
     def __init__(self, chore, user):

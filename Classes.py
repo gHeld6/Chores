@@ -1,5 +1,6 @@
 import pickle
 file_name = "storage"
+import app.models as m
 DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 class Chore:
@@ -115,3 +116,12 @@ def add_chore(day, chore, user, color, week):
 
 def add_chore_list(day, chore, user):
     return 2
+
+
+def get_days():
+    days = [[], [], [], [], [], [], []]
+    chores = m.Chore.query.order_by(m.Chore.day).all()
+    for chore in chores:
+        days[chore.day].append(
+            (chore.chore, m.User.query.filter_by(id=chore.user_id).first().name, chore.completed, chore.id))
+    return days

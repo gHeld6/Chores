@@ -1,31 +1,25 @@
 from app import app_inst, db
 from Classes import *
 from app.models import *
-from flask import request, render_template, url_for, flash, redirect
-import pickle
+from flask import request, render_template, flash, redirect
 from app.forms import AddChoreForm
 
 
 @app_inst.route("/", methods=["GET", "POST"])
 @app_inst.route("/index", methods=["GET", "POST"])
 def index():
-    with open(file_name, "rb") as file:
-        week = pickle.load(file)
     form = AddChoreForm()
-    days = [[],[],[],[],[],[],[]]
-    chores = Chore.query.order_by(Chore.day).all()
-    for chore in chores:
-        days[chore.day].append((chore.chore, User.query.filter_by(id=chore.user_id).first().name, chore.id))
+    days = get_days()
     users = User.query.all()
-    for c in chores:
-        flash(c)
-    for u in users:
-        flash(u)
-    return render_template("index.html", title="home", week=week, form=form, chores=chores, days=days, day_names=DAY_NAMES)
+    return render_template("index.html", title="home", form=form, days=days, day_names=DAY_NAMES)
 
 
 @app_inst.route("/delete_chore", methods=["GET", "POST"])
 def delete_chore():
+    n_id = request.args.get("id")
+    c = Chore.query.filter_by(id=n_id).first()
+    db.session.delete(c)
+    db.session.commit()
     return redirect("/index")
 
 

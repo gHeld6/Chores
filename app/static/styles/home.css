@@ -1,19 +1,22 @@
 
-html {
-    background-color: pink;
+* {
+    padding: 5px;
 }
-
-table, td, tr {
-    border: 1px solid black;
+table, td, tr, body {
+    padding 5px;
+}
+table {
+    width: 100%;
 }
 .chore {
-    width: 300;
+    width: 60%;
 }
 .day {
     background-color: lightblue;
 }
 body {
-    width: 500px;
+    margin-left: 5%;
+    width: 70%;
     background-color: white;
 }
 .addChore {

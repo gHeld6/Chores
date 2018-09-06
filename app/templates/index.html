@@ -49,25 +49,10 @@
             {% for i in range(0, 7) %}
                 <tr><td class="day" colspan="4">{{ day_names[i] }}</td></tr>
                 {% for c in days[i] %}
-                    <tr><td>{{ c[0] }}</td><td>{{ c[1] }}</td><td>{{ c[2] }}</td></tr>
+                    <tr><td class="chore">{{ c[0] }}</td><td>{{ c[1] }}</td><td>{{ c[2] }}</td>
+                        <td width="40"><a href="/delete_chore?id={{ c[3] }}"><span class="glyphicon glyphicon-trash"></span></a></td></tr>
                 {% endfor %}
             {% endfor %}
         </table>
-        <table>
-            <tr><td colspan="4">Chore List</td></tr>
-
-            {% for day in week.get_days() %}
-                <tr><td class="day" colspan="4">{{ day.get_day() }}</td></tr>
-                {% if day.get_num_chores() == 0 %}
-                    <tr><td colspan="3">No chores for {{ day.get_day() }}</td></tr>
-                {% else %}
-                    {% for c in day.get_chores() %}
-                        <tr><td class="chore">{{ c.get_chore() }}</td><td>{{ c.who().get_name() }}</td><td>{{ c.is_completed() }}</td>
-                        <td width="40"><a href="/delete_chore?id=1"><span class="glyphicon glyphicon-trash"></span></a></td>
-                    {% endfor %}
-                {% endif %}
-            {% endfor %}
-        </table>
-
     </body>
 </html>

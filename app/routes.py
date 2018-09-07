@@ -1,5 +1,5 @@
 from app import app_inst, db
-from Classes import *
+from header import *
 from app.models import *
 from flask import request, render_template, flash, redirect
 from app.forms import AddChoreForm

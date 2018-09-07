@@ -1,12 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField
 from wtforms.validators import DataRequired
-from Classes import file_name, get_week
 from app.models import *
 
 
 class AddChoreForm(FlaskForm):
-    week = get_week()
     users = User.query.all()
     user = SelectField("User", choices=[(users[0].name, users[0].name), (users[1].name, users[1].name)])
     new_chore = StringField("Chore", validators=[DataRequired()])

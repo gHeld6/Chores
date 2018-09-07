@@ -49,7 +49,7 @@
             {% for i in range(0, 7) %}
                 <tr><td class="day" colspan="4">{{ day_names[i] }}</td></tr>
                 {% for c in days[i] %}
-                    <tr><td class="chore">{{ c[0] }}</td><td>{{ c[1] }}</td><td>{{ c[2] }}</td>
+                    <tr><td class="chore">{{ c[0] }}</td><td>{{ c[1].name }}</td><td>{{ c[2] }}</td>
                         <td width="40"><a href="/delete_chore?id={{ c[3] }}"><span class="glyphicon glyphicon-trash"></span></a></td></tr>
                 {% endfor %}
             {% endfor %}

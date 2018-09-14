@@ -7,14 +7,80 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <!--<script src={{ url_for("static", filename="scripts.js") }} ></script>-->
         <link rel="stylesheet" type="text/css" href={{ url_for("static", filename="styles/home.css") }}/>
+        <script>
 
+            $(document).ready(function() {
+
+                var curDay = "{{ day_names[cur_day] }}";
+                name = "." + curDay;
+                {% for i in range(0, 7) %}
+                    {% if i != cur_day %}
+                        name = "#" + "{{ day_names[i] }}";
+                        $(name).hide();
+                    {% endif %}
+                {% endfor %}
+                $("#addChore").submit(function(e){
+                    var url = "{{ url_for('add_chore_ajax') }}";
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $("#addChore").serialize(),
+                        success: function(data){
+
+                            var newEle = $("<form class='delChore' method='post'><input type='hidden' name='id' value='" +
+                            data.data.id + "'><span class='chore'>" + data.data.chore + "</span><span class='user'>" +
+                            data.data.user +
+                            "</span><span class='finished'>False</span><button type='submit'><span class='glyphicon" +
+                            " glyphicon-trash'></span></button></form>");
+                            console.log(newEle);
+                            $("#" + data.data.day).append(newEle);
+                        },
+                        error: function(){
+                            alert("Error loading chores");
+                        }
+                    });
+                    $("#new_chore").val("");
+                    e.preventDefault();
+                });
+                $(document).on('submit', ".delChore", function(e){
+                    var url = "{{ url_for('del_chore_ajax') }}";
+                    e.preventDefault();
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $(this).serialize(),
+                        success: function(data){
+                            console.log(data);
+                        },
+                        error: function(){
+                            alert("Error deleting chore");
+                        }
+                    });
+                    $(this).remove();
+
+                });
+
+                $(".showHide").click(function() {
+                    var ele = $("#" + $(this).val());
+                    ele.toggle();
+                    if(ele.is(":visible"))
+                    {
+
+                        $(this).children().removeClass("glyphicon glyphicon-plus").addClass("glyphicon glyphicon-minus");
+                    }
+                    else
+                    {
+                        $(this).children().removeClass("glyphicon glyphicon-minus").addClass("glyphicon glyphicon-plus");
+                    }
+                });
+            });
+        </script>
     </head>
     <body>
         <header>
             <h1>Update Chore List</h1>
-        </header>
         <div class="addChore">
-            <form action="/add_chore" method="post">
+            <form id="addChore">
                 <p>
                     {{ form.user.label }}<br>
                     {{ form.user() }}
@@ -30,8 +96,9 @@
                 <p>
                     {{ form.submit() }}<br>
                 </p>
-        </form>
+            </form>
         </div>
+        </header>
         <div class="messages">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -42,17 +109,22 @@
             </ul>
             {% endif %}
         {% endwith %}
-
-        <table>
-            <tr><td colspan="4">Chore List</td></tr>
-
-            {% for i in range(0, 7) %}
-                <tr><td class="day" colspan="4">{{ day_names[i] }}</td></tr>
+        </div>
+        <h2>Chore List</h2>
+        {% for i in range(0, 7) %}
+        <p class="day"><span class="dayName">{{ day_names[i] }}</span><button value="{{ day_names[i] }}" class="showHide"><span class="glyphicon glyphicon-plus"></span></button></p>
+            <div id="{{ day_names[i] }}" class="dayDiv">
+                <p class="heading"><span class="chore">Chore</span><span class="user">Assigned To</span><span class="finished">Completed</span></p>
                 {% for c in days[i] %}
-                    <tr><td class="chore">{{ c[0] }}</td><td>{{ c[1].name }}</td><td>{{ c[2] }}</td>
-                        <td width="40"><a href="/delete_chore?id={{ c[3] }}"><span class="glyphicon glyphicon-trash"></span></a></td></tr>
+                    <form class="delChore" method="post">
+                        <input type="hidden" name="id" value="{{ c[3] }}">
+                        <span class="chore">{{ c[0] }}</span>
+                        <span class="user">{{ c[1].name }}</span><span class="finished">{{ c[2] }}</span>
+                        <button type="submit"><span class="glyphicon glyphicon-trash"></span></button>
+                    </form>
                 {% endfor %}
-            {% endfor %}
-        </table>
+            </div>
+        {% endfor %}
+
     </body>
 </html>

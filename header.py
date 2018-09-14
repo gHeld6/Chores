@@ -1,8 +1,7 @@
 from app.models import *
 file_name = "storage"
-DB_NAME = "app.db"
 import app.models as m
-DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 
 def get_days():

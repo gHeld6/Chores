@@ -1,22 +1,50 @@
-
 * {
-    padding: 5px;
+    padding: 5px
 }
-table, td, tr, body {
-    padding 5px;
-}
+
 table {
     width: 100%;
 }
-.chore {
-    width: 60%;
+.day, .heading {
+    width: 100%;
 }
-.day {
+.dayDiv {
+    margin-left: 30px;
+}
+.chore, .user, .finished, .dayName, .form {
+    display: inline-block;
+}
+.chore {
+    width: 420px;
+}
+/* dark
+#1F2833
+#C5C6C7
+#66FCF1 bright blue
+#45A29E grey blue*/
+.heading {
+    font-size: 20px;
+    color: white;
     background-color: lightblue;
 }
+.user {
+    width: 150px;
+}
+.finished {
+    width: 100px;
+}
+.dayName {
+    width: 50px;
+}
+.day > span{
+    font-size: 15px;
+    text-transform: uppercase;
+}
 body {
-    margin-left: 5%;
-    width: 70%;
+    box-shadow: 15px 15px 5px rgba(0, 0, 0, .5);
+    margin: auto;
+    width: 800px;
+    border: 2px solid rgb(120, 120, 120);
     background-color: white;
 }
 .addChore {

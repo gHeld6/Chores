@@ -10,8 +10,11 @@
         <script>
 
             $(document).ready(function() {
-
+                var choreHeading = $('<p class="heading"><span class="chore">' +
+                'Chore</span><span class="user">Assigned To</span><span class="finished">Completed</span></p>');
+                var noChoreHeading = $('<p class="noChores">No chores.</p>');
                 var curDay = "{{ day_names[cur_day] }}";
+
                 name = "." + curDay;
                 {% for i in range(0, 7) %}
                     {% if i != cur_day %}
@@ -19,6 +22,7 @@
                         $(name).hide();
                     {% endif %}
                 {% endfor %}
+
                 $("#addChore").submit(function(e){
                     var url = "{{ url_for('add_chore_ajax') }}";
                     $.ajax({
@@ -26,13 +30,18 @@
                         url: url,
                         data: $("#addChore").serialize(),
                         success: function(data){
-
+                            var ele = $("#" + data.data.day);
+                            var p = ele.find("p");
+                            if(p.hasClass("noChores"))
+                            {
+                                p.remove();
+                                ele.append(choreHeading);
+                            }
                             var newEle = $("<form class='delChore' method='post'><input type='hidden' name='id' value='" +
                             data.data.id + "'><span class='chore'>" + data.data.chore + "</span><span class='user'>" +
-                            data.data.user +
-                            "</span><span class='finished'>False</span><button type='submit'><span class='glyphicon" +
+                            data.data.user + "</span><input type='hidden' name='day' value='" + data.data.day + "' >" +
+                            "<span class='finished'>False</span><button type='submit'><span class='glyphicon" +
                             " glyphicon-trash'></span></button></form>");
-                            console.log(newEle);
                             $("#" + data.data.day).append(newEle);
                         },
                         error: function(){
@@ -42,6 +51,7 @@
                     $("#new_chore").val("");
                     e.preventDefault();
                 });
+
                 $(document).on('submit', ".delChore", function(e){
                     var url = "{{ url_for('del_chore_ajax') }}";
                     e.preventDefault();
@@ -50,6 +60,15 @@
                         url: url,
                         data: $(this).serialize(),
                         success: function(data){
+                            day = $("#" + data.data.day);
+                            var len = day.children().length;
+
+                            if(len == 1)
+                            {
+                                var p = day.find("p");
+                                p.remove();
+                                day.append(noChoreHeading);
+                            }
                             console.log(data);
                         },
                         error: function(){
@@ -114,10 +133,15 @@
         {% for i in range(0, 7) %}
         <p class="day"><span class="dayName">{{ day_names[i] }}</span><button value="{{ day_names[i] }}" class="showHide"><span class="glyphicon glyphicon-plus"></span></button></p>
             <div id="{{ day_names[i] }}" class="dayDiv">
-                <p class="heading"><span class="chore">Chore</span><span class="user">Assigned To</span><span class="finished">Completed</span></p>
+                {% if days[i]|length == 0 %}
+                    <p class="noChores">No chores.</p>
+                {% else %}
+                    <p class="heading"><span class="chore">Chore</span><span class="user">Assigned To</span><span class="finished">Completed</span></p>
+                {% endif %}
                 {% for c in days[i] %}
                     <form class="delChore" method="post">
                         <input type="hidden" name="id" value="{{ c[3] }}">
+                        <input type="hidden" name="day" value="{{ day_names[i] }}">
                         <span class="chore">{{ c[0] }}</span>
                         <span class="user">{{ c[1].name }}</span><span class="finished">{{ c[2] }}</span>
                         <button type="submit"><span class="glyphicon glyphicon-trash"></span></button>

@@ -40,10 +40,11 @@ def add_chore_ajax():
 @app_inst.route("/del_chore_ajax", methods=["POST"])
 def del_chore_ajax():
     c_id = int(request.form["id"])
+    day = request.form["day"]
     chore = Chore.query.filter_by(id=c_id).first()
     if not chore:
         flash("Chore not found for id:{}".format(c_id))
         return redirect("/index")
     db.session.delete(chore)
     db.session.commit()
-    return jsonify(data={'id': c_id})
+    return jsonify(data={'id': c_id, 'day': day})

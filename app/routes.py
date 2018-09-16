@@ -10,6 +10,7 @@ from datetime import date
 @app_inst.route("/index", methods=["GET", "POST"])
 def index():
     form = AddChoreForm()
+    form.user.choices = [(u.name, u.name) for u in User.query.all()]
     days = get_days()
     cur_day = date.today().weekday()
     return render_template("index.html", title="home", form=form, days=days, day_names=DAY_NAMES, cur_day=int(cur_day))
@@ -48,3 +49,20 @@ def del_chore_ajax():
     db.session.delete(chore)
     db.session.commit()
     return jsonify(data={'id': c_id, 'day': day})
+
+
+@app_inst.route("/edit_users", methods=["GET"])
+def edit_users():
+    users = get_users()
+    return render_template("updateUser.html", colors=list(rgb_vals.keys()), users=users)
+
+
+@app_inst.route("/change_user_info", methods=["POST"])
+def change_user_info():
+    u_id = request.form["id"]
+    u = User.query.filter_by(id=u_id).first()
+    u.name = request.form["name"]
+    u.color = request.form["color"]
+    db.session.commit()
+    flash("Update successful")
+    return redirect("/edit_users")

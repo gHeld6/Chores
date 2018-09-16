@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <title>Update Chore List</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href={{ url_for("static", filename="styles/home.css") }}/>
+        <script>
+
+            $(document).ready(function() {
+            });
+        </script>
+    </head>
+    <nav><a href="/">Chores</a><a href="edit_users">Users</a></nav>
+    <body>
+        <header>
+            <h1>Update User Info</h1>
+        </header>
+        <div class="messages">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul>
+                {% for m in messages %}
+                    <li>{{ m }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        {% endwith %}
+        </div>
+        <div class="topForm" class="updateUser">
+            {% for i in range(0, users|length) %}
+            <p class="title">User {{ i }}</p>
+                <form method="post" action="/change_user_info">
+                    <input type="hidden" name="id" value="{{ users[i][2] }}">
+                    <p><span class="title">Name: </span><input type="text" name="name"
+                       width="40" value="{{ users[i][0] }}" required></p>
+                    <p><span  class="title">Color: </span>
+                    <select name="color">
+                        {% for c in colors %}
+                            {% if c == users[i][1] %}
+                                <option value="{{ c }}" selected="selected">{{ c }}</option>
+                            {% else %}
+                                <option value="{{ c }}">{{ c }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select></p>
+                    <input type="submit" value="Update User">
+                </form>
+            {% endfor %}
+        </div>
+    </body>
+</html>

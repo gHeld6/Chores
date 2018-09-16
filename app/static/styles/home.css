@@ -17,11 +17,7 @@ table {
 .chore {
     width: 420px;
 }
-/* dark
-#1F2833
-#C5C6C7
-#66FCF1 bright blue
-#45A29E grey blue*/
+
 .heading {
     font-size: 20px;
     color: white;
@@ -47,7 +43,14 @@ body {
     border: 2px solid rgb(120, 120, 120);
     background-color: white;
 }
-.addChore {
+.topForm {
     width: 100%;
     background-color: lightblue;
+}
+
+.title {
+    font-weight: bold;
+}
+.updateUser {
+    display: inline-block;
 }

@@ -1,7 +1,8 @@
 from app.models import *
 file_name = "storage"
-import app.models as m
 DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+rgb_vals = {"Red": [255, 0, 0], "Green": [0, 255, 0], "Blue": [0, 0, 255],
+            "Purple": [255, 0, 255]}
 
 
 def get_days():
@@ -11,11 +12,23 @@ def get_days():
     :return:
     """
     days = [[], [], [], [], [], [], []]
-    chores = m.Chore.query.order_by(m.Chore.day).all()
+    chores = Chore.query.order_by(Chore.day).all()
     for chore in chores:
         days[chore.day].append(
-            (chore.chore, m.User.query.filter_by(id=chore.user_id).first(), chore.completed, chore.id))
+            (chore.chore, User.query.filter_by(id=chore.user_id).first(), chore.completed, chore.id))
     return days
+
+
+def get_users():
+    """
+    This function returns a list of tuples that represent each user
+    :return:
+    """
+    users_tup = []
+    users = User.query.all()
+    for user in users:
+        users_tup.append((user.name, user.color, user.id))
+    return users_tup
 
 
 def set_completed(chore):

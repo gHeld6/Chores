@@ -12,6 +12,7 @@
         </script>
     </head>
     <nav><a href="/">Chores</a><a href="edit_users">Users</a></nav>
+    <hr>
     <body>
         <header>
             <h1>Update User Info</h1>
@@ -29,10 +30,10 @@
         </div>
         <div class="topForm" class="updateUser">
             {% for i in range(0, users|length) %}
-            <p class="title">User {{ i }}</p>
-                <form method="post" action="/change_user_info">
-                    <input type="hidden" name="id" value="{{ users[i][2] }}">
-                    <p><span class="title">Name: </span><input type="text" name="name"
+            <p class="userName">User {{ i + 1 }}</p>
+            <form method="post" action="/change_user_info">
+                <input type="hidden" name="id" value="{{ users[i][2] }}">
+                <p><span class="title">Name: </span><input type="text" name="name"
                        width="40" value="{{ users[i][0] }}" required></p>
                     <p><span  class="title">Color: </span>
                     <select name="color">

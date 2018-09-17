@@ -11,6 +11,11 @@ table {
 .dayDiv {
     margin-left: 30px;
 }
+.dayName, .userName {
+    font-weight: bold;
+    font-size: 20px;
+    color: rgb(75, 75, 75)
+}
 .chore, .user, .finished, .dayName, .form {
     display: inline-block;
 }

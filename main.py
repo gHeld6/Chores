@@ -1,24 +1,26 @@
 from header import *
 from time import sleep
 import os
-from app import db
 from math import *
 from datetime import date
 from grovepi import *
 from grove_rgb_lcd import *
 
+
 MAX_RANGE = 1023 # maximum value for potentiometer
 
 
 led = 4
+
 button = 3
 pot = 2
+
+led_list = [LED(11), LED(12)]
 
 pinMode(led, "OUTPUT")
 pinMode(button, "INPUT")
 
 sleep(1)
-greg = User("Greg", "blue")
 
 
 def get_level():
@@ -33,7 +35,7 @@ def disp_chore(chore):
     :param chore: a tuple (chore name, user assigned to chore, completed or not, chore id)
     :return: none
     """
-    color = chore[1].color.lower()
+    color = chore[1].color
     #if chore completed column is true, turn on led
     if chore[2]:
         digitalWrite(led, 1)
@@ -66,23 +68,34 @@ def get_ind(level, num_chore):
 
 days = get_days()
 
-old_mod_time = os.stat(DB_NAME).st_mtime
+old_mod_time = os.stat("app.db").st_mtime
 today = date.today()
 
-old_day = today.weekday()
-day = days[today.weekday()]# get the day for the day of week it is
+old_day_num = today.weekday()
+day = days[today.weekday()]
 old_level = get_level()
-old_chore = ""
-disp_chore(day[get_ind(old_level, len(day))])
+old_chore = day[get_ind(old_level, len(day))]
+disp_chore(old_chore)
 
 while True:
-    new_mod_time = os.stat(DB_NAME).st_mtime
-    if new_mod_time != old_mod_time:
-        days = get_days()
-        old_mod_time = new_mod_time
     today = date.today()
-    if old_day != today.weekday():
-        day = days[today.weekday()]
+    today_num = today.weekday()
+    new_mod_time = os.stat("app.db").st_mtime
+    if new_mod_time != old_mod_time:
+        # Get updated days list if file has been changed. Also
+        # check if uodate to file caused a user's chore list
+        # to be completed
+        users = get_users()
+        days = get_days()
+        for u in users:
+            if chores_complete(u.name, today_num):
+                led_list[u.led].on()
+            else:
+                led_list[u.led].off()
+        old_mod_time = new_mod_time
+
+    if old_day_num != today_num:
+        day = days[today_num]
 
     num_chores = len(day)
     
@@ -95,11 +108,18 @@ while True:
     cur_chore = day[ind]
 
     if digitalRead(button):
+        """ if button is pressed, flip the completed field of the
+            current chore, then check if the chore list for that user
+            is completed.
+        """
         set_completed(cur_chore)
+        if chores_complete(cur_chore[1].name, today_num):
+            led_list[cur_chore[1].led].on()
+        else:
+            led_list[cur_chore[1].led].off()
         disp_chore(day[ind])
         sleep(.3)
-        
-    # print("%s, %d, num_chores: %d" % (day.get_day(), today.weekday(), num_chores))
+
     if num_chores > 0 and old_chore != cur_chore:
         disp_chore(cur_chore)
         old_chore = cur_chore

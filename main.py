@@ -12,10 +12,19 @@ MAX_RANGE = 1023 # maximum value for potentiometer
 
 led = 4
 
-button = 3
+button = 8
 pot = 2
+light_sensor = 1
+rgb_led = 2
+num_leds = 2
 
-led_list = [LED(11), LED(12)]
+BRIGHT = 1
+DIM = 0
+
+brightness = BRIGHT
+
+chainableRgbLed_init(rgb_led, num_leds)
+
 
 pinMode(led, "OUTPUT")
 pinMode(button, "INPUT")
@@ -25,16 +34,29 @@ sleep(1)
 
 def get_level():
     l = analogRead(pot)
+    if l > MAX_RANGE:
+        l = MAX_RANGE
     return l
 
+def get_light_level():
+    return analogRead(light_sensor)
 
-def disp_chore(chore):
+
+def disp_chore(numChores, day):
     """
     This function displays the chore on the lcd with the user's color.
     It also controls an led indicating whether the chore is completed or not
     :param chore: a tuple (chore name, user assigned to chore, completed or not, chore id)
     :return: none
     """
+    if numChores == 0:
+        setRGB(10, 10, 10)
+        setText("There are no chores for today.")
+        digitalWrite(led, 0)
+        return
+    ind = get_ind(get_level(), numChores)
+    chore = day[ind]
+    text = chore[0]
     color = chore[1].color
     #if chore completed column is true, turn on led
     if chore[2]:
@@ -42,11 +64,20 @@ def disp_chore(chore):
     else:
         digitalWrite(led, 0)
     if not color in rgb_vals:
-        color = "red"
-    setRGB(*rgb_vals[color])
-    setText(chore[0])
+        color = "Red"
+    
+    setRGB(*rgb_vals[color][brightness])
+    setText(text)
 
 
+def get_cur_chore(day):
+    num_chores = len(day)
+    if num_chores == 0:
+        return -1
+    ind = get_ind(get_level(), num_chores)
+    return day[ind]
+
+    
 def get_ind(level, num_chore):
     """
     This function returns an index in the chore array given the level
@@ -65,18 +96,32 @@ def get_ind(level, num_chore):
 
     return index
 
+def set_chores_done_led(user_name, led_num, day):
+    if chores_complete(user_name, day):
+        storeColor(*led_vals["Green"][brightness])
+        chainableRgbLed_pattern(rgb_led, 0, led_num)
+    else:
+        storeColor(*led_vals["Red"][brightness])
+        chainableRgbLed_pattern(rgb_led, 0, led_num)
 
+        
 days = get_days()
-
+users = get_users()
 old_mod_time = os.stat("app.db").st_mtime
 today = date.today()
 
 old_day_num = today.weekday()
 day = days[today.weekday()]
-old_level = get_level()
-old_chore = day[get_ind(old_level, len(day))]
-disp_chore(old_chore)
 
+old_level = get_level()
+old_light_level = get_light_level()
+
+old_chore = get_cur_chore(day)
+disp_chore(len(day), day)
+
+for i in range(len(users)):
+    set_chores_done_led(users[i][0], users[i][3], old_day_num)
+   
 while True:
     today = date.today()
     today_num = today.weekday()
@@ -87,11 +132,11 @@ while True:
         # to be completed
         users = get_users()
         days = get_days()
+        day = days[today.weekday()]
         for u in users:
-            if chores_complete(u.name, today_num):
-                led_list[u.led].on()
-            else:
-                led_list[u.led].off()
+            set_chores_done_led(u[0], u[3], today_num)
+
+        disp_chore(len(day), day)
         old_mod_time = new_mod_time
 
     if old_day_num != today_num:
@@ -104,27 +149,37 @@ while True:
         new_level = old_level
     else:
         old_level = new_level
-    ind = get_ind(new_level, num_chores)
-    cur_chore = day[ind]
+    
+    cur_chore = get_cur_chore(day)
 
     if digitalRead(button):
-        """ if button is pressed, flip the completed field of the
+        """if button is pressed, flip the completed field of the
             current chore, then check if the chore list for that user
             is completed.
         """
         set_completed(cur_chore)
-        if chores_complete(cur_chore[1].name, today_num):
-            led_list[cur_chore[1].led].on()
+        set_chores_done_led(cur_chore[1].name, cur_chore[1].led, today_num)
+        disp_chore(len(day), day)
+        
+    new_light_level = get_light_level()
+    if new_light_level != old_light_level:
+        if new_light_level < 90:
+            if brightness != DIM:
+                brightness = DIM
+                disp_chore(len(day), day)
         else:
-            led_list[cur_chore[1].led].off()
-        disp_chore(day[ind])
-        sleep(.3)
-
-    if num_chores > 0 and old_chore != cur_chore:
-        disp_chore(cur_chore)
+            if brightness != BRIGHT:
+                brightness = BRIGHT
+                disp_chore(len(day), day)
+        for u in users:
+            set_chores_done_led(u[0], u[3], today_num)
+        old_light_level = new_light_level
+        
+    if num_chores > 0 and old_chore != cur_chore and cur_chore != -1:
+        disp_chore(len(day), day)
         old_chore = cur_chore
 
-
+chainableRgbLed_test(rgb_led, num_leds, 0)
 
 
 

@@ -1,8 +1,11 @@
 from app.models import *
-file_name = "storage"
+
 DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-rgb_vals = {"Red": [255, 0, 0], "Green": [0, 255, 0], "Blue": [0, 0, 255],
-            "Purple": [255, 0, 255]}
+rgb_vals = {"Red": [[50, 0, 0],[255, 0, 0]], "Green": [[0, 50, 0],[0, 255, 0]],
+            "Blue": [[0, 0, 50],[0, 0, 255]],
+            "Purple": [[50, 0, 100],[255, 0, 255]]}
+
+led_vals = {"Red":[[10, 0, 0],[50, 0, 0]], "Green": [[0, 10, 0], [0, 50, 0]]} 
 
 
 
@@ -28,7 +31,7 @@ def get_users():
     users_tup = []
     users = User.query.order_by(User.id).all()
     for user in users:
-        users_tup.append((user.name, user.color, user.id))
+        users_tup.append((user.name, user.color, user.id, user.led))
     return users_tup
 
 
@@ -38,7 +41,7 @@ def set_completed(chore):
     :param chore:
     :return:
     """
-    c = Chore.query.filter_by(id=chore[3])
+    c = Chore.query.filter_by(id=chore[3]).first()
     c.completed = not chore[2]
     db.session.commit()
 

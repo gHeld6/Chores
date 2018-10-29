@@ -5,6 +5,7 @@ from math import *
 from datetime import date
 from grovepi import *
 from grove_rgb_lcd import *
+import threading
 
 
 MAX_RANGE = 1023 # maximum value for potentiometer
@@ -28,7 +29,7 @@ chainableRgbLed_init(rgb_led, num_leds)
 
 pinMode(led, "OUTPUT")
 pinMode(button, "INPUT")
-
+threads = list()
 sleep(1)
 
 
@@ -37,6 +38,33 @@ def get_level():
     if l > MAX_RANGE:
         l = MAX_RANGE
     return l
+
+class ScrollThread(threading.Thread):
+    def __init__(self, text, window_size = 32):
+        super(ScrollThread, self).__init__()
+        self._stop_event = threading.Event()
+        self.text_arr = list(text + "                   ")
+        self.win_size = window_size
+        
+    def stop(self):
+        self._stop_event.set()
+
+    def run(self):
+        while(True):
+            length = len(self.text_arr)
+            for i in range(length):
+                end = i + self.win_size
+                if end > length:
+                    end = length
+                    window = self.text_arr[i:end]
+                    window.extend(self.text_arr[:i+self.win_size-length])
+                else:
+                    window = self.text_arr[i:end]
+                setText_norefresh("".join(window))
+                time.sleep(0.3)
+                if self._stop_event.is_set():
+                    return
+
 
 def get_light_level():
     return analogRead(light_sensor)
@@ -57,17 +85,25 @@ def disp_chore(numChores, day):
     ind = get_ind(get_level(), numChores)
     chore = day[ind]
     text = chore[0]
-    color = chore[1].color
-    #if chore completed column is true, turn on led
     if chore[2]:
         digitalWrite(led, 1)
     else:
         digitalWrite(led, 0)
+    color = chore[1].color
     if not color in rgb_vals:
         color = "Red"
-    
     setRGB(*rgb_vals[color][brightness])
-    setText(text)
+    if len(threads) >= 1:
+        old_thread = threads.pop()
+        old_thread.stop()
+        old_thread.join()
+        sleep(0.1)
+    if len(text) <= 32:
+        setText_norefresh(text)
+    else:
+        t1 = ScrollThread(text)
+        threads.append(t1)
+        t1.start()
 
 
 def get_cur_chore(day):
@@ -151,15 +187,14 @@ while True:
         old_level = new_level
     
     cur_chore = get_cur_chore(day)
-
     if digitalRead(button):
         """if button is pressed, flip the completed field of the
             current chore, then check if the chore list for that user
             is completed.
         """
-        set_completed(cur_chore)
-        set_chores_done_led(cur_chore[1].name, cur_chore[1].led, today_num)
-        disp_chore(len(day), day)
+        if cur_chore != -1:
+            set_completed(cur_chore)
+            set_chores_done_led(cur_chore[1].name, cur_chore[1].led, today_num)
         
     new_light_level = get_light_level()
     if new_light_level != old_light_level:

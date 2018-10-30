@@ -60,7 +60,7 @@ def edit_users():
 @app_inst.route("/change_user_info", methods=["POST"])
 def change_user_info():
     u_id = request.form["id"]
-    u = User.query.filter_by(id=u_id).first()
+    u = User.query.filter_by(id=int(u_id)).first()
     u.name = request.form["name"]
     u.color = request.form["color"]
     db.session.commit()

@@ -1,37 +1,20 @@
 from header import *
-from time import sleep
-import os
-from math import *
-from datetime import date
-from grovepi import *
-from grove_rgb_lcd import *
-import threading
-
-
-MAX_RANGE = 1023 # maximum value for potentiometer
-
 
 led = 4
-
 button = 8
 pot = 2
 light_sensor = 1
 rgb_led = 2
 num_leds = 2
 
-BRIGHT = 1
-DIM = 0
-
 brightness = BRIGHT
 
 chainableRgbLed_init(rgb_led, num_leds)
 
-
 pinMode(led, "OUTPUT")
 pinMode(button, "INPUT")
 threads = list()
-sleep(1)
-
+sleep(0.1)
 
 def get_level():
     l = analogRead(pot)
@@ -75,6 +58,7 @@ def disp_chore(numChores, day):
     This function displays the chore on the lcd with the user's color.
     It also controls an led indicating whether the chore is completed or not
     :param chore: a tuple (chore name, user assigned to chore, completed or not, chore id)
+    :param day: day to get chore for
     :return: none
     """
     if numChores == 0:
@@ -85,19 +69,16 @@ def disp_chore(numChores, day):
     ind = get_ind(get_level(), numChores)
     chore = day[ind]
     text = chore[0]
-    if chore[2]:
-        digitalWrite(led, 1)
-    else:
-        digitalWrite(led, 0)
+    digitalWrite(led, chore[2])
     color = chore[1].color
     if not color in rgb_vals:
         color = "Red"
     setRGB(*rgb_vals[color][brightness])
     if len(threads) >= 1:
+        #stop old thread if there is one
         old_thread = threads.pop()
         old_thread.stop()
         old_thread.join()
-        sleep(0.1)
     if len(text) <= 32:
         setText_norefresh(text)
     else:
@@ -107,6 +88,12 @@ def disp_chore(numChores, day):
 
 
 def get_cur_chore(day):
+    """
+    This function gets the current chore for the passed in day
+    based on the level of the potentiometer.
+    :param day: day to get the current chore for
+    :return: tuple, representing chore
+    """
     num_chores = len(day)
     if num_chores == 0:
         return -1
@@ -122,17 +109,20 @@ def get_ind(level, num_chore):
     :param num_chore: number of chores for the day
     :return: index for the list of chores
     """
-    # print(level)
     size = floor(MAX_RANGE / num_chore) + 1
     r = size
     index = 0
     while r < level:
         r = size + r
         index = index + 1
-
     return index
 
+
 def set_chores_done_led(user_name, led_num, day):
+    """
+    updates the user's led based on whether or not all
+    chores are complete
+    """
     if chores_complete(user_name, day):
         storeColor(*led_vals["Green"][brightness])
         chainableRgbLed_pattern(rgb_led, 0, led_num)
@@ -145,7 +135,6 @@ days = get_days()
 users = get_users()
 old_mod_time = os.stat("app.db").st_mtime
 today = date.today()
-
 old_day_num = today.weekday()
 day = days[today.weekday()]
 
@@ -188,12 +177,13 @@ while True:
     
     cur_chore = get_cur_chore(day)
     if digitalRead(button):
-        """if button is pressed, flip the completed field of the
-            current chore, then check if the chore list for that user
-            is completed.
+        """
+        If button is pressed, flip the completed field of the
+        current chore, then check if the chore list for that user
+        is completed and set led.
         """
         if cur_chore != -1:
-            set_completed(cur_chore)
+            digitalWrite(led, set_completed(cur_chore))
             set_chores_done_led(cur_chore[1].name, cur_chore[1].led, today_num)
         
     new_light_level = get_light_level()

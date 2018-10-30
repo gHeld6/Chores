@@ -1,19 +1,34 @@
 from app.models import *
+from time import sleep
+import os
+from math import *
+from datetime import date
+from grovepi import *
+from grove_rgb_lcd import *
+import threading
+
+
+MAX_RANGE = 1023 # maximum value for potentiometer
+
+"""
+BRIGHT and DIM are used with rgb_vals and led_vals
+to choose bright or dim versions of the colors.
+"""
+BRIGHT = 1
+DIM = 0
 
 DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 rgb_vals = {"Red": [[50, 0, 0],[255, 0, 0]], "Green": [[0, 50, 0],[0, 255, 0]],
             "Blue": [[0, 0, 50],[0, 0, 255]],
             "Purple": [[50, 0, 100],[255, 0, 255]]}
-
 led_vals = {"Red":[[10, 0, 0],[50, 0, 0]], "Green": [[0, 10, 0], [0, 50, 0]]} 
-
 
 
 def get_days():
     """
     This function returns a list of lists where each one represents a day of the week.
     Each inner list contains tuples for each chore for that day
-    :return:
+    :return: List
     """
     days = [[], [], [], [], [], [], []]
     chores = Chore.query.order_by(Chore.day).all()
@@ -26,7 +41,8 @@ def get_days():
 def get_users():
     """
     This function returns a list of tuples that represent each user
-    :return:
+    :return: Array of tuples representing users:
+             (user_name, user_color, user_id, user_led_number)
     """
     users_tup = []
     users = User.query.order_by(User.id).all()
@@ -37,13 +53,14 @@ def get_users():
 
 def set_completed(chore):
     """
-    This function changes the completed of the given chore
-    :param chore:
-    :return:
+    This function flips the completed value of the given chore
+    :param chore: chore to to have completed field flipped
+    :return: new completed value 
     """
     c = Chore.query.filter_by(id=chore[3]).first()
     c.completed = not chore[2]
     db.session.commit()
+    return c.completed
 
 
 def chores_complete(name, day):
@@ -52,7 +69,7 @@ def chores_complete(name, day):
     if that user completed all their chores for that day.
     :param name: name of user to check if all chores are completed
     :param day: day to check if user completed chores
-    :return: Boolean
+    :return: Boolean, whether or not user's chores are completed 
     """
     user = User.query.filter_by(name=name).first()
     u_id = user.id

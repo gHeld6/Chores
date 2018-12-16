@@ -63,7 +63,13 @@ def set_completed(chore):
     return c.completed
 
 
-def chores_complete(name, day):
+def set_chores_not_complete(day_num):
+    chores = Chore.query.filter(Chore.day == day_num).all()
+    for chore in chores:
+        chore.completed = 0
+    db.session.commit()
+
+def chores_complete(name, day_num):
     """
     This function takes a user name and a day of the week and returns true
     if that user completed all their chores for that day.
@@ -73,4 +79,20 @@ def chores_complete(name, day):
     """
     user = User.query.filter_by(name=name).first()
     u_id = user.id
-    return len(Chore.query.filter(Chore.user_id == u_id, Chore.day == int(day), Chore.completed == 0).all()) == 0
+    return len(Chore.query.filter(Chore.user_id == u_id, Chore.day == day_num, Chore.completed == 0).all()) == 0
+
+
+def get_chore_counts(day):
+    """
+
+    """
+    users = User.query.all()
+    ret_val = []
+    for u in users:
+        num_chores = len(Chore.query.filter(Chore.user_id == u.id, Chore.day == int(day)).all())
+        completed_chores = len(Chore.query.filter(Chore.user_id == u.id, Chore.day == int(day), Chore.completed == 1).all())
+        ret_val.append({"name": u.name, "total_chores": num_chores, "chores_completed": completed_chores})
+        print ret_val
+    return ret_val
+    
+    

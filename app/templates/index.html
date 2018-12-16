@@ -42,7 +42,7 @@
                             data.data.user + "</span><input type='hidden' name='day' value='" + data.data.day + "' >" +
                             "<span class='finished'>False</span><button type='submit'><span class='glyphicon" +
                             " glyphicon-trash'></span></button></form>");
-                            $("#" + data.data.day).append(newEle);
+                            $(ele).append(newEle);
                         },
                         error: function(){
                             alert("Error loading chores");
@@ -113,6 +113,10 @@
                 <p>
                     {{ form.day.label }}<br>
                     {{ form.day() }}
+                </p>
+                <p>
+                    {{ form.time.label }}<br>
+                    {{ form.time() }}
                 </p>
                 <p>
                     {{ form.submit() }}<br>

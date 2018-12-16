@@ -5,6 +5,8 @@ button = 8
 pot = 2
 light_sensor = 1
 rgb_led = 2
+dht_sensor = 7
+
 num_leds = 2
 
 brightness = BRIGHT
@@ -26,7 +28,7 @@ class ScrollThread(threading.Thread):
     def __init__(self, text, window_size = 32):
         super(ScrollThread, self).__init__()
         self._stop_event = threading.Event()
-        self.text_arr = list(text + "                   ")
+        self.text_arr = list(text + "               ")
         self.win_size = window_size
         
     def stop(self):
@@ -100,6 +102,12 @@ def get_cur_chore(day):
     ind = get_ind(get_level(), num_chores)
     return day[ind]
 
+def change_day(day_num):
+    counts = get_chore_counts(day_num)
+    for c in counts:
+        print "name: {}, total chores: {}, completed chores: {}".format(c["name"], c["total_chores"], c["chores_completed"])
+    set_chores_not_complete(day_num)
+    
     
 def get_ind(level, num_chore):
     """
@@ -137,7 +145,7 @@ old_mod_time = os.stat("app.db").st_mtime
 today = date.today()
 old_day_num = today.weekday()
 day = days[today.weekday()]
-
+change_day(old_day_num)
 old_level = get_level()
 old_light_level = get_light_level()
 
@@ -166,6 +174,7 @@ while True:
 
     if old_day_num != today_num:
         day = days[today_num]
+        change_day(today_num)
 
     num_chores = len(day)
     

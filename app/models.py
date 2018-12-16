@@ -1,4 +1,5 @@
 from app import db
+import datetime
 
 
 class Chore(db.Model):
@@ -7,7 +8,8 @@ class Chore(db.Model):
     chore = db.Column(db.String(100))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     completed = db.Column(db.Boolean, default=False)
-
+    time_completed_by = db.Column(db.DateTime)
+    
     def __repr__(self):
         return "<Chore {}>".format(self.chore)
 

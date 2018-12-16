@@ -31,11 +31,12 @@ def add_chore_ajax():
     day = form.day.data
     chore = form.new_chore.data
     user = form.user.data
+    time = form.time.data
     u = User.query.filter_by(name=user).first()
-    c = Chore(chore=chore, day=int(day), user=u)
+    c = Chore(chore=chore, day=int(day), user=u, time_completed_by=time)
     db.session.add(c)
     db.session.commit()
-    return jsonify(data={'day': DAY_NAMES[int(day)], 'chore': chore, 'user': user, 'id': c.id})
+    return jsonify(data={'day': DAY_NAMES[int(day)], 'chore': chore, 'user': user, 'id': c.id, 'time': time})
 
 
 @app_inst.route("/del_chore_ajax", methods=["POST"])

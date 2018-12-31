@@ -6,6 +6,9 @@ from datetime import date
 from grovepi import *
 from grove_rgb_lcd import *
 import threading
+import datetime
+import requests
+import json
 
 
 MAX_RANGE = 1023 # maximum value for potentiometer
@@ -16,6 +19,8 @@ to choose bright or dim versions of the colors.
 """
 BRIGHT = 1
 DIM = 0
+
+#
 
 DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 rgb_vals = {"Red": [[50, 0, 0],[255, 0, 0]], "Green": [[0, 50, 0],[0, 255, 0]],
@@ -34,10 +39,20 @@ def get_days():
     chores = Chore.query.order_by(Chore.day).all()
     for chore in chores:
         days[chore.day].append(
-            (chore.chore, User.query.filter_by(id=chore.user_id).first(), chore.completed, chore.id))
+            (chore.chore, User.query.filter_by(id=chore.user_id).first(), chore.completed, chore.id, chore.time_completed_by))
     return days
 
 
+def notify(name_str, body, title):
+    tok = User.query.filter_by(name=name_str).first().token
+    send_data = {"type": "note", "title": title, "body": body}
+    response = requests.post("https://api.pushbullet.com/v2/pushes",
+                             data=json.dumps(send_data),
+                             headers={"Authorization": tok, "Content-Type": "application/json"})
+    if response.status != 200:
+        raise Exception("Failed to notify")
+
+    
 def get_users():
     """
     This function returns a list of tuples that represent each user
@@ -47,7 +62,7 @@ def get_users():
     users_tup = []
     users = User.query.order_by(User.id).all()
     for user in users:
-        users_tup.append((user.name, user.color, user.id, user.led))
+        users_tup.append((user.name, user.color, user.id, user.led, user.token))
     return users_tup
 
 

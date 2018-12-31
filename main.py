@@ -70,6 +70,7 @@ def disp_chore(numChores, day):
         return
     ind = get_ind(get_level(), numChores)
     chore = day[ind]
+    print "{}".format(chore[4])
     text = chore[0]
     digitalWrite(led, chore[2])
     color = chore[1].color

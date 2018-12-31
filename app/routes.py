@@ -1,9 +1,9 @@
 from app import app_inst, db
 from header import *
-from app.models import *
+from app.models import Chore, User
 from flask import request, render_template, flash, redirect, jsonify
 from app.forms import AddChoreForm
-from datetime import date
+import datetime
 
 
 @app_inst.route("/", methods=["GET", "POST"])
@@ -31,9 +31,11 @@ def add_chore_ajax():
     day = form.day.data
     chore = form.new_chore.data
     user = form.user.data
-    time = form.time.data
+    hour = int(form.time_field.data)
+    time = datetime.datetime(2020, 12, 12, hour)
     u = User.query.filter_by(name=user).first()
     c = Chore(chore=chore, day=int(day), user=u, time_completed_by=time)
+    print "time: {}".format(time)
     db.session.add(c)
     db.session.commit()
     return jsonify(data={'day': DAY_NAMES[int(day)], 'chore': chore, 'user': user, 'id': c.id, 'time': time})

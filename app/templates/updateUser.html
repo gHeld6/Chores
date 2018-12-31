@@ -45,6 +45,8 @@
                             {% endif %}
                         {% endfor %}
                     </select></p>
+                    <p><span class="title">Pushbullet Token: </span>
+                    <input type="text" size="40" name="tok" value={{ users[i][4] }} required></p>
                     <input type="submit" value="Update User">
                 </form>
             {% endfor %}

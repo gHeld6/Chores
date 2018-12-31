@@ -16,6 +16,7 @@ class Chore(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(60))
     led = db.Column(db.Integer)
     name = db.Column(db.String(40), index=True, unique=True)
     color = db.Column(db.String(20), index=True)

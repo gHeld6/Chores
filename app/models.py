@@ -8,8 +8,9 @@ class Chore(db.Model):
     chore = db.Column(db.String(100))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     completed = db.Column(db.Boolean, default=False)
-    time_completed_by = db.Column(db.DateTime)
-    
+    recurring = db.Column(db.Boolean, default=True)
+    time_completed_by = db.Column(db.Integer)
+  
     def __repr__(self):
         return "<Chore {}>".format(self.chore)
 

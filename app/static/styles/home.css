@@ -8,28 +8,34 @@ table {
 .day, .heading {
     width: 100%;
 }
+#time_field {
+    size: 5;
+}
 .dayDiv {
     margin-left: 30px;
 }
 .dayName, .userName {
     font-weight: bold;
-    font-size: 20px;
+    font-size: 15px;
     color: rgb(75, 75, 75)
 }
 .chore, .user, .finished, .dayName, .form {
     display: inline-block;
 }
 .chore {
-    width: 420px;
+    width: 30%;
 }
-
+.timeF {
+    width: 90px;
+    background-color: black;
+}
 .heading {
-    font-size: 20px;
+    font-size: 15px;
     color: white;
     background-color: lightblue;
 }
 .user {
-    width: 150px;
+    width: 20%;
 }
 .finished {
     width: 100px;

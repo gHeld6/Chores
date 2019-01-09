@@ -15,6 +15,8 @@
                 var noChoreHeading = $('<p class="noChores">No chores.</p>');
                 var curDay = "{{ day_names[cur_day] }}";
 
+                $("#notificationBlock").hide()
+
                 name = "." + curDay;
                 {% for i in range(0, 7) %}
                     {% if i != cur_day %}
@@ -78,7 +80,15 @@
                     $(this).remove();
 
                 });
-
+                $("#notify").click(function() {
+                    var val = $("#notify").is(":checked");
+                    if(val){
+                        $("#notificationBlock").show();
+                    } else {
+                        $("#notificationBlock").hide();
+                    }
+                });
+                    
                 $(".showHide").click(function() {
                     var ele = $("#" + $(this).val());
                     ele.toggle();
@@ -94,6 +104,7 @@
                 });
             });
         </script>
+        
     </head>
     <nav><a href="/">Chores</a><a href="edit_users">Users</a></nav>
     <hr>
@@ -101,6 +112,7 @@
         <header>
             <h1>Update Chore List</h1>
         <div class="topForm">
+            
             <form id="addChore">
                 <p>
                     {{ form.user.label }}<br>
@@ -114,10 +126,28 @@
                     {{ form.day.label }}<br>
                     {{ form.day() }}
                 </p>
-                <p>
-                    {{ form.time.label }}<br>
-                    {{ form.time() }}
-                </p>
+                <p>Notifications:
+                <input type="checkbox" id="notify" value="Yes">
+                <div id="notificationBlock">
+                    {{ form.time_field.label }}<br>
+                    <select id="time_field" name="time_field" size="1">
+                        <option value="1">1:00AM</option><option value="2">2:00AM</option>
+                        <option value="3">3:00AM</option><option value="4">4:00AM</option>
+                        <option value="5">5:00AM</option><option value="6">6:00AM</option>
+                        <option value="7">7:00AM</option><option value="8">8:00AM</option>
+                        <option value="9">9:00AM</option><option value="10">10:00AM</option>
+                        <option value="11" selected>11:00AM</option><option value="12">12:00PM</option>
+                        <option value="13">1:00PM</option><option value="14">2:00PM</option>
+                        <option value="15">3:00PM</option><option value="16">4:00PM</option>
+                        <option value="17">5:00PM</option><option value="18">6:00PM</option>
+                        <option value="19">7:00PM</option><option value="20">8:00PM</option>
+                        <option value="21">9:00PM</option><option value="22">10:00PM</option>
+                        <option value="23">11:00PM</option>
+                    </select>
+                    <p>Recurring:
+                        <input type="checkbox" name="recurring" value="Yes">
+                    </p>
+                </div>
                 <p>
                     {{ form.submit() }}<br>
                 </p>
@@ -137,19 +167,26 @@
         </div>
         <h2>Chore List</h2>
         {% for i in range(0, 7) %}
-        <p class="day"><span class="dayName">{{ day_names[i] }}</span><button value="{{ day_names[i] }}" class="showHide"><span class="glyphicon glyphicon-plus"></span></button></p>
+        <p class="day"><span class="dayName">{{ day_names[i] }}</span>
+        <button value="{{ day_names[i] }}" class="showHide"><span class="glyphicon glyphicon-plus"></span></button></p>
             <div id="{{ day_names[i] }}" class="dayDiv">
                 {% if days[i]|length == 0 %}
                     <p class="noChores">No chores.</p>
                 {% else %}
-                    <p class="heading"><span class="chore">Chore</span><span class="user">Assigned To</span><span class="finished">Completed</span></p>
+                    <p class="heading">
+                    <span class="chore">Chore</span>
+                    <span class="time">Notification Time</span>
+                    <span class="user">Assigned To</span>
+                    <span class="finished">Completed</span>
+                    </p>
                 {% endif %}
                 {% for c in days[i] %}
                     <form class="delChore" method="post">
-                        <input type="hidden" name="id" value="{{ c[3] }}">
+                        <input type="hidden" name="id" value="{{ c["id"] }}">
                         <input type="hidden" name="day" value="{{ day_names[i] }}">
-                        <span class="chore">{{ c[0] }}</span>
-                        <span class="user">{{ c[1].name }}</span><span class="finished">{{ c[2] }}</span>
+                        <span class="chore">{{ c["chore"] }}</span>
+                        <span class="timeF">{{ times[c["notify_time"] - 1][1] }}</span>
+                        <span class="user">{{ c["user"].name }}</span><span class="finished">{{ c["complete"] }}</span>
                         <button type="submit"><span class="glyphicon glyphicon-trash"></span></button>
                     </form>
                 {% endfor %}

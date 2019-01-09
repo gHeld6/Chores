@@ -13,7 +13,8 @@ def index():
     form.user.choices = [(u.name, u.name) for u in User.query.all()]
     days = get_days()
     cur_day = date.today().weekday()
-    return render_template("index.html", title="home", form=form, days=days, day_names=DAY_NAMES, cur_day=int(cur_day))
+    return render_template("index.html", title="home", form=form, days=days,
+                           day_names=DAY_NAMES, cur_day=int(cur_day), times=TIMES)
 
 
 @app_inst.route("/delete_chore", methods=["GET", "POST"])
@@ -28,17 +29,25 @@ def delete_chore():
 @app_inst.route("/add_chore_ajax", methods=["POST"])
 def add_chore_ajax():
     form = AddChoreForm()
-    day = form.day.data
     chore = form.new_chore.data
+    if chore == "":
+        flash("Chore field must not be empty")
+        return render_template("index.html", title="home", form=form,
+                               days=get_days(), day_names=DAY_NAMES,
+                               cur_day=int(date.today().weekday()), times=TIMES)
+    day = form.day.data
+    
     user = form.user.data
-    hour = int(form.time_field.data)
-    time = datetime.datetime(2020, 12, 12, hour)
+    time = int(form.time_field.data)
+    rec = False
+    if form.recurring.data == "True":
+        rec = True
     u = User.query.filter_by(name=user).first()
-    c = Chore(chore=chore, day=int(day), user=u, time_completed_by=time)
-    print "time: {}".format(time)
+    c = Chore(chore=chore, day=int(day), user=u, time_completed_by=time, recurring=rec)
     db.session.add(c)
     db.session.commit()
-    return jsonify(data={'day': DAY_NAMES[int(day)], 'chore': chore, 'user': user, 'id': c.id, 'time': time})
+    return jsonify(data={'day': DAY_NAMES[int(day)], 'chore': chore, 'user': user,
+                         'id': c.id, 'time': time, "recurring": rec})
 
 
 @app_inst.route("/del_chore_ajax", methods=["POST"])

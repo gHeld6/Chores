@@ -70,10 +70,9 @@ def disp_chore(numChores, day):
         return
     ind = get_ind(get_level(), numChores)
     chore = day[ind]
-    print "{}".format(chore[4])
-    text = chore[0]
-    digitalWrite(led, chore[2])
-    color = chore[1].color
+    text = chore["chore"]
+    digitalWrite(led, chore["complete"])
+    color = chore["user"].color
     if not color in rgb_vals:
         color = "Red"
     setRGB(*rgb_vals[color][brightness])
@@ -103,11 +102,14 @@ def get_cur_chore(day):
     ind = get_ind(get_level(), num_chores)
     return day[ind]
 
-def change_day(day_num):
+
+def change_day(day_num, day):
     counts = get_chore_counts(day_num)
-    for c in counts:
-        print "name: {}, total chores: {}, completed chores: {}".format(c["name"], c["total_chores"], c["chores_completed"])
+    day_info = {"day": DAY_NAMES[day_num], "users": counts}
+    with open(record_file, "w+") as file:
+        json.dump(day_info, file)
     set_chores_not_complete(day_num)
+    remove_nonrecurring(day)
     
     
 def get_ind(level, num_chore):
@@ -146,7 +148,7 @@ old_mod_time = os.stat("app.db").st_mtime
 today = date.today()
 old_day_num = today.weekday()
 day = days[today.weekday()]
-change_day(old_day_num)
+change_day(old_day_num, day)
 old_level = get_level()
 old_light_level = get_light_level()
 
@@ -174,8 +176,9 @@ while True:
         old_mod_time = new_mod_time
 
     if old_day_num != today_num:
+        change_day(old_day_num, day)
         day = days[today_num]
-        change_day(today_num)
+        
 
     num_chores = len(day)
     
@@ -198,6 +201,7 @@ while True:
         
     new_light_level = get_light_level()
     if new_light_level != old_light_level:
+        print "{}".format(datetime.datetime.now().strftime("%H:%M"))
         if new_light_level < 90:
             if brightness != DIM:
                 brightness = DIM

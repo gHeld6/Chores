@@ -10,8 +10,9 @@
         <script>
 
             $(document).ready(function() {
-                var choreHeading = $('<p class="heading"><span class="chore">' +
-                'Chore</span><span class="user">Assigned To</span><span class="finished">Completed</span></p>');
+                var choreHeading = $('<p class="heading"><span class="chore">Chore</span>' +
+                    '<span class="time">Notification Time</span><span class="user">Assigned To</span>' +
+                    '<span class="finished">Completed</span><span class="recurring">Recurring</span></p>');
                 var noChoreHeading = $('<p class="noChores">No chores.</p>');
                 var curDay = "{{ day_names[cur_day] }}";
 
@@ -40,10 +41,10 @@
                                 ele.append(choreHeading);
                             }
                             var newEle = $("<form class='delChore' method='post'><input type='hidden' name='id' value='" +
-                            data.data.id + "'><span class='chore'>" + data.data.chore + "</span><span class='timeF'>" +
+                            data.data.id + "'><span class='chore'>" + data.data.chore + "</span><span class='time'>" +
                             data.data.time + "</span><span class='user'>" + data.data.user + "</span><input type='hidden' name='day' value='" + data.data.day + "' >" +
                             "<span class='finished'>False</span><span class='recurring'>" + data.data.recurring +
-                            "</span><button type='submit'><span class='glyphicon glyphicon-trash'></span></button></form>");
+                            "</span><button type='submit' class='submit'><span class='glyphicon glyphicon-trash'></span></button></form>");
                             $(ele).append(newEle);
                         },
                         error: function(){
@@ -51,6 +52,9 @@
                         }
                     });
                     $("#new_chore").val("");
+                    $("#notify")[0].checked = false;
+                    $("#recurring")[0].checked = false;
+                    $("#notificationBlock").hide();
                     e.preventDefault();
                 });
 
@@ -144,10 +148,10 @@
                         <option value="21">9:00PM</option><option value="22">10:00PM</option>
                         <option value="23">11:00PM</option>
                     </select>
-                    <p>Recurring:
-                        <input type="checkbox" name="recurring" value="Yes">
-                    </p>
                 </div>
+                <p>Recurring:
+                    <input type="checkbox" name="recurring" id="recurring" value="Yes">
+                </p>
                 <p>
                     {{ form.submit() }}<br>
                 </p>
@@ -175,10 +179,10 @@
                 {% else %}
                     <p class="heading">
                     <span class="chore">Chore</span>
-                    <span class="time">Notification Time</span>
-                    <span class="user">Assigned To</span>
-                    <span class="recurring">Recurring</span>
+                    <span class="time">Notify Time</span>
+                    <span class="user">User</span>
                     <span class="finished">Completed</span>
+                    <span class="recurring">Recurring</span>
                     </p>
                 {% endif %}
                 {% for c in days[i] %}
@@ -186,10 +190,10 @@
                         <input type="hidden" name="id" value="{{ c["id"] }}">
                         <input type="hidden" name="day" value="{{ day_names[i] }}">
                         <span class="chore">{{ c["chore"] }}</span>
-                        <span class="timeF">{{ times[c["notify_time"] - 1][1] }}</span>
+                        <span class="time">{{ times[c["notify_time"] - 1][1] }}</span>
                         <span class="user">{{ c["user"].name }}</span><span class="finished">{{ c["complete"] }}</span>
                         <span class="recurring">{{ c["recurring"] }}</span>
-                        <button type="submit"><span class="glyphicon glyphicon-trash"></span></button>
+                        <button type="submit" class="submit"><span class="glyphicon glyphicon-trash"></span></button>
                     </form>
                 {% endfor %}
             </div>

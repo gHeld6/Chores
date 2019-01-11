@@ -40,10 +40,10 @@
                                 ele.append(choreHeading);
                             }
                             var newEle = $("<form class='delChore' method='post'><input type='hidden' name='id' value='" +
-                            data.data.id + "'><span class='chore'>" + data.data.chore + "</span><span class='user'>" +
-                            data.data.user + "</span><input type='hidden' name='day' value='" + data.data.day + "' >" +
-                            "<span class='finished'>False</span><button type='submit'><span class='glyphicon" +
-                            " glyphicon-trash'></span></button></form>");
+                            data.data.id + "'><span class='chore'>" + data.data.chore + "</span><span class='timeF'>" +
+                            data.data.time + "</span><span class='user'>" + data.data.user + "</span><input type='hidden' name='day' value='" + data.data.day + "' >" +
+                            "<span class='finished'>False</span><span class='recurring'>" + data.data.recurring +
+                            "</span><button type='submit'><span class='glyphicon glyphicon-trash'></span></button></form>");
                             $(ele).append(newEle);
                         },
                         error: function(){
@@ -127,7 +127,7 @@
                     {{ form.day() }}
                 </p>
                 <p>Notifications:
-                <input type="checkbox" id="notify" value="Yes">
+                <input type="checkbox" id="notify" name="notify" value="Yes">
                 <div id="notificationBlock">
                     {{ form.time_field.label }}<br>
                     <select id="time_field" name="time_field" size="1">
@@ -177,6 +177,7 @@
                     <span class="chore">Chore</span>
                     <span class="time">Notification Time</span>
                     <span class="user">Assigned To</span>
+                    <span class="recurring">Recurring</span>
                     <span class="finished">Completed</span>
                     </p>
                 {% endif %}
@@ -187,6 +188,7 @@
                         <span class="chore">{{ c["chore"] }}</span>
                         <span class="timeF">{{ times[c["notify_time"] - 1][1] }}</span>
                         <span class="user">{{ c["user"].name }}</span><span class="finished">{{ c["complete"] }}</span>
+                        <span class="recurring">{{ c["recurring"] }}</span>
                         <button type="submit"><span class="glyphicon glyphicon-trash"></span></button>
                     </form>
                 {% endfor %}

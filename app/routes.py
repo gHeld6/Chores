@@ -28,6 +28,10 @@ def delete_chore():
 
 @app_inst.route("/add_chore_ajax", methods=["POST"])
 def add_chore_ajax():
+    tf = int(request.form["time_field"])
+    if request.form.get("notify") != "Yes":
+        tf = 24
+    rec = request.form.get("recurring")
     form = AddChoreForm()
     chore = form.new_chore.data
     if chore == "":
@@ -36,18 +40,15 @@ def add_chore_ajax():
                                days=get_days(), day_names=DAY_NAMES,
                                cur_day=int(date.today().weekday()), times=TIMES)
     day = form.day.data
-    
     user = form.user.data
-    time = int(form.time_field.data)
-    rec = False
-    if form.recurring.data == "True":
-        rec = True
     u = User.query.filter_by(name=user).first()
-    c = Chore(chore=chore, day=int(day), user=u, time_completed_by=time, recurring=rec)
+    c = Chore(chore=chore, day=int(day), user=u, time_completed_by=tf, recurring=(rec == "Yes"))
     db.session.add(c)
     db.session.commit()
+    if rec != "Yes":
+        rec = "No"
     return jsonify(data={'day': DAY_NAMES[int(day)], 'chore': chore, 'user': user,
-                         'id': c.id, 'time': time, "recurring": rec})
+                         'id': c.id, 'time': TIMES[tf - 1][1], "recurring": rec})
 
 
 @app_inst.route("/del_chore_ajax", methods=["POST"])

@@ -1,7 +1,9 @@
 * {
     padding: 5px
 }
-
+span {
+    display: inline-block;
+}
 table {
     width: 100%;
 }
@@ -23,11 +25,7 @@ table {
     display: inline-block;
 }
 .chore {
-    width: 30%;
-}
-.timeF {
-    width: 90px;
-    background-color: black;
+    width: 20%;
 }
 .heading {
     font-size: 15px;
@@ -38,10 +36,19 @@ table {
     width: 20%;
 }
 .finished {
-    width: 100px;
+    width: 15%;
+}
+.recurring {
+    width: 10%;
+}
+.time {
+    width: 15%;
 }
 .dayName {
     width: 50px;
+}
+.submit {
+    float: right;
 }
 .day > span{
     font-size: 15px;

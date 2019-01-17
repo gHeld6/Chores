@@ -76,6 +76,7 @@ def change_user_info():
     u = User.query.filter_by(id=int(u_id)).first()
     u.name = request.form["name"]
     u.color = request.form["color"]
+    u.token = request.form["tok"]
     db.session.commit()
     flash("Update successful")
     return redirect("/edit_users")

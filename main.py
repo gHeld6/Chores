@@ -1,4 +1,4 @@
-from header import *
+from app.header import *
 
 led = 4
 button = 8
@@ -16,6 +16,7 @@ chainableRgbLed_init(rgb_led, num_leds)
 pinMode(led, "OUTPUT")
 pinMode(button, "INPUT")
 threads = list()
+already_notified = set()
 sleep(0.1)
 
 def get_level():
@@ -23,6 +24,7 @@ def get_level():
     if l > MAX_RANGE:
         l = MAX_RANGE
     return l
+
 
 class ScrollThread(threading.Thread):
     def __init__(self, text, window_size = 32):
@@ -110,6 +112,7 @@ def change_day(day_num, day):
         json.dump(day_info, file)
     set_chores_not_complete(day_num)
     remove_nonrecurring(day)
+    already_notified.clear()
     
     
 def get_ind(level, num_chore):
@@ -141,14 +144,22 @@ def set_chores_done_led(user_name, led_num, day):
         storeColor(*led_vals["Red"][brightness])
         chainableRgbLed_pattern(rgb_led, 0, led_num)
 
-        
+
+def check_chores_for_notify(chores):
+    now = datetime.datetime.now()
+    for c in chores:
+        if check_time_for_notify(now, c["notify_time"]) and c["id"] not in already_notified:
+            if not c["complete"]:
+                notify(c["user"].name, c["chore"], "AHHHHH!!!")
+                already_notified.add(c["id"])
+
+
 days = get_days()
 users = get_users()
 old_mod_time = os.stat("app.db").st_mtime
 today = date.today()
 old_day_num = today.weekday()
 day = days[today.weekday()]
-change_day(old_day_num, day)
 old_level = get_level()
 old_light_level = get_light_level()
 
@@ -168,7 +179,7 @@ while True:
         # to be completed
         users = get_users()
         days = get_days()
-        day = days[today.weekday()]
+        day = days[today_num]
         for u in users:
             set_chores_done_led(u[0], u[3], today_num)
 
@@ -178,7 +189,7 @@ while True:
     if old_day_num != today_num:
         change_day(old_day_num, day)
         day = days[today_num]
-        
+        old_day_num = today_num
 
     num_chores = len(day)
     
@@ -197,11 +208,10 @@ while True:
         """
         if cur_chore != -1:
             digitalWrite(led, set_completed(cur_chore))
-            set_chores_done_led(cur_chore[1].name, cur_chore[1].led, today_num)
+            set_chores_done_led(cur_chore["user"].name, cur_chore["user"].led, today_num)
         
     new_light_level = get_light_level()
     if new_light_level != old_light_level:
-        print "{}".format(datetime.datetime.now().strftime("%H:%M"))
         if new_light_level < 90:
             if brightness != DIM:
                 brightness = DIM
@@ -214,6 +224,9 @@ while True:
             set_chores_done_led(u[0], u[3], today_num)
         old_light_level = new_light_level
         
+    #check if chore notification needs to be sent out
+    check_chores_for_notify(days[today_num])
+    
     if num_chores > 0 and old_chore != cur_chore and cur_chore != -1:
         disp_chore(len(day), day)
         old_chore = cur_chore

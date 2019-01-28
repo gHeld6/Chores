@@ -6,7 +6,7 @@ pot = 2
 light_sensor = 1
 rgb_led = 2
 dht_sensor = 7
-
+DB_FILE = "/home/pi/Dexter/GrovePi/Projects/Chores/Chores/app.db"
 num_leds = 2
 
 brightness = BRIGHT
@@ -156,7 +156,7 @@ def check_chores_for_notify(chores):
 
 days = get_days()
 users = get_users()
-old_mod_time = os.stat("app.db").st_mtime
+old_mod_time = os.stat(DB_FILE).st_mtime
 today = date.today()
 old_day_num = today.weekday()
 day = days[today.weekday()]
@@ -172,7 +172,7 @@ for i in range(len(users)):
 while True:
     today = date.today()
     today_num = today.weekday()
-    new_mod_time = os.stat("app.db").st_mtime
+    new_mod_time = os.stat(DB_FILE).st_mtime
     if new_mod_time != old_mod_time:
         # Get updated days list if file has been changed. Also
         # check if uodate to file caused a user's chore list

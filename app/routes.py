@@ -12,6 +12,15 @@ def index():
     form = AddChoreForm()
     form.user.choices = [(u.name, u.name) for u in User.query.all()]
     days = get_days()
+    for d in days:
+        for c in d:
+            c['recurring'] = 'No'
+            c['complete'] = 'No'
+            if c['recurring']:
+                c['recurring'] = 'Yes'
+            if c['complete']:
+                c['complete'] = 'Yes'
+                
     cur_day = date.today().weekday()
     return render_template("index.html", title="home", form=form, days=days,
                            day_names=DAY_NAMES, cur_day=int(cur_day), times=TIMES)

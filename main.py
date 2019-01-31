@@ -73,6 +73,7 @@ def disp_chore(numChores, day):
     ind = get_ind(get_level(), numChores)
     chore = day[ind]
     text = chore["chore"]
+    length = len(text)
     digitalWrite(led, chore["complete"])
     color = chore["user"].color
     if not color in rgb_vals:
@@ -83,6 +84,12 @@ def disp_chore(numChores, day):
         old_thread = threads.pop()
         old_thread.stop()
         old_thread.join()
+    if length > 16:
+        start = text[0:17].rfind(" ")
+        end = text[16:].find(" ")
+        if start != 16 and end != 17:
+            spaces = " " * ((16 - start) - 1)
+            text = text[0:start] + spaces + text[start:] 
     if len(text) <= 32:
         setText_norefresh(text)
     else:

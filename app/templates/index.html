@@ -15,7 +15,7 @@
                     '<span class="finished">Completed</span><span class="recurring">Recurring</span></p>');
                 var noChoreHeading = $('<p class="noChores">No chores.</p>');
                 var curDay = "{{ day_names[cur_day] }}";
-
+                console.log($(".userInput").parent());
                 $("#notificationBlock").hide()
 
                 name = "." + curDay;
@@ -118,7 +118,7 @@
         <div class="topForm">
             
             <form id="addChore">
-                <p>
+                <p class="userInput">
                     {{ form.user.label }}<br>
                     {{ form.user() }}
                 </p>

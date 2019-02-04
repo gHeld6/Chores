@@ -14,12 +14,14 @@ def index():
     days = get_days()
     for d in days:
         for c in d:
-            c['recurring'] = 'No'
-            c['complete'] = 'No'
             if c['recurring']:
                 c['recurring'] = 'Yes'
+            else:
+                c['recurring'] = 'No'
             if c['complete']:
                 c['complete'] = 'Yes'
+            else:
+                c['complete'] = 'No'
                 
     cur_day = date.today().weekday()
     return render_template("index.html", title="home", form=form, days=days,

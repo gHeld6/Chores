@@ -65,6 +65,11 @@ def disp_chore(numChores, day):
     :param day: day to get chore for
     :return: none
     """
+    if len(threads) >= 1:
+        #stop old thread if there is one
+        old_thread = threads.pop()
+        old_thread.stop()
+        old_thread.join()
     if numChores == 0:
         setRGB(10, 10, 10)
         setText("There are no chores for today.")
@@ -79,18 +84,16 @@ def disp_chore(numChores, day):
     if not color in rgb_vals:
         color = "Red"
     setRGB(*rgb_vals[color][brightness])
-    if len(threads) >= 1:
-        #stop old thread if there is one
-        old_thread = threads.pop()
-        old_thread.stop()
-        old_thread.join()
     if length > 16:
         start = text[0:17].rfind(" ")
         end = text[16:].find(" ")
         if start != 16 and end != 17:
             spaces = " " * ((16 - start) - 1)
-            text = text[0:start] + spaces + text[start:] 
-    if len(text) <= 32:
+            if length + 16 - start < 33:
+                text = text[0:start] + spaces + text[start:]
+            else:
+                length = 33
+    if length <= 32:
         setText_norefresh(text)
     else:
         t1 = ScrollThread(text)
@@ -175,7 +178,7 @@ disp_chore(len(day), day)
 
 for i in range(len(users)):
     set_chores_done_led(users[i][0], users[i][3], old_day_num)
-   
+sleep(4)
 while True:
     today = date.today()
     today_num = today.weekday()
@@ -197,6 +200,7 @@ while True:
         change_day(old_day_num, day)
         day = days[today_num]
         old_day_num = today_num
+        disp_chore(len(day), day)
 
     num_chores = len(day)
     
